@@ -1,4 +1,4 @@
-(defproject sv/timbre.gcloud.logging "0.1.0"
+(defproject sv/timbre.gcloud.logging "0.1.1-SNAPSHOT"
   :description "A timbre appender for the Google Cloud Logging service"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
