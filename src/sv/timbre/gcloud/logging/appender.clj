@@ -32,12 +32,14 @@
    :fatal "CRITICAL"})
 
 (defn prepare-log-entry-payload [timbre-log-data]
-  {:vargs_str (pr-str (:vargs timbre-log-data))
-   :msg @(:msg_ timbre-log-data)
-   :file (:?file timbre-log-data)
-   :hostname @(:hostname_ timbre-log-data)
-   :ns_str (:?ns-str timbre-log-data)
-   :line (:?line timbre-log-data)})
+  (let [{:keys [vargs msg_ ?err ?file hostname_ ?ns-str ?line]} timbre-log-data]
+    {:vargs_str (pr-str vargs)
+     :msg       @msg_
+     :err       (pr-str ?err)
+     :file      ?file
+     :hostname  @hostname_
+     :ns_str    ?ns-str
+     :line      ?line}))
 
 (defn prepare-log-entry [timbre-log-data]
   ;; see https://cloud.google.com/logging/docs/api/reference/rest/v2/LogEntry
