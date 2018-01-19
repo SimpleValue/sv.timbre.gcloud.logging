@@ -10,7 +10,8 @@
 (def client-config
   {:scopes ["https://www.googleapis.com/auth/logging.write"]})
 
-(def lite-client
+(defn create-lite-client
+  []
   ;; clj-http.lite is used here, since clj-http creates some debug log
   ;; messages, which would cause an endless loop (since each call of
   ;; the appender would create new log messages)
@@ -49,19 +50,20 @@
    :jsonPayload (prepare-log-entry-payload timbre-log-data)})
 
 (defn appender [context]
-  (fn [log-data]
-    (when (not= (:context log-data) ::appending)        
-      (try
-        (log/with-context
-          ::appending
-          (lite-client
-           (write-log-request
-            {:entries
-             [(merge
-               (:log-entry-metadata context)
-               (prepare-log-entry log-data))]})))
-        (catch Exception e
-          ;; ignore since logging could cause an endless loop here, if
-          ;; the appending code also writes something to the log (over
-          ;; timbre, slf4j etc.).
-          )))))
+  (let [lite-client (create-lite-client)]
+    (fn [log-data]
+      (when (not= (:context log-data) ::appending)
+        (try
+          (log/with-context
+            ::appending
+            (lite-client
+             (write-log-request
+              {:entries
+               [(merge
+                 (:log-entry-metadata context)
+                 (prepare-log-entry log-data))]})))
+          (catch Exception e
+            ;; ignore since logging could cause an endless loop here, if
+            ;; the appending code also writes something to the log (over
+            ;; timbre, slf4j etc.).
+            ))))))
