@@ -28,7 +28,13 @@
 
 (def instance-metadata-request
   {:request-method :get
-   :url "http://metadata.google.internal/computeMetadata/v1/instance/"
+   ;; the explicit IP address of the metadata.google.internal server
+   ;; is used to avoid name server resolution issues, especially in
+   ;; Docker containers where the metadata.google.internal entry is
+   ;; missing in the /etc/hosts
+   :url "http://169.254.169.254/computeMetadata/v1/instance/"
+   ;; this is also done by Google Cloud API Java client:
+   ;; https://github.com/google/google-api-java-client/blob/1.23.0/google-api-client/src/main/java/com/google/api/client/googleapis/auth/oauth2/OAuth2Utils.java#L42
    :query-params {:recursive true}
    :headers {"Metadata-Flavor" "Google"}})
 
